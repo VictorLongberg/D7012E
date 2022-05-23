@@ -121,8 +121,8 @@ moves(Plyr, State, MvList) :-
 	calculateTestmoves(Plyr, State, CoordList, [], Moves),	% Calculate all possible moves.
 	sort(Moves, Moves2),  		%Sort it to remove possible duplicates and so on..
 	%append(Moves2, [['n']], Moves3),
-	tail(Moves2,MvList),  		%remove the first element since its always a empty list.
-	writeln(MvList).
+	tail(Moves2,MvList).  		%remove the first element since its always a empty list.
+	%writeln(MvList).
 
 
 calculateTestmoves(_,_,[],Temp,Temp). 						% For the list of Cordinates run its
