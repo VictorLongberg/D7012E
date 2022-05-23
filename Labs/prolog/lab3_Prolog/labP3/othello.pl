@@ -158,21 +158,23 @@ nextState(Plyr, Move, State, NewState, NextPlyr) :-
 % Find the Combinations of flips available in the newstate.
 % Takes each state from the previous function and applies it to the next and so on.
 findAllFlips(Plyr, State, Move, Result) :- 
-	findFlipN(Plyr, State, Move, Move, TempState2),
-	findFlipS(Plyr, TempState2, Move, Move, TempState3),
-	findFlipE(Plyr, TempState3, Move, Move, TempState4),
-	findFlipW(Plyr, TempState4, Move, Move, TempState5),
-	findFlipNE(Plyr,TempState5, Move, Move, TempState6),
-	findFlipNW(Plyr,TempState6, Move, Move, TempState7),
-	findFlipSE(Plyr,TempState7, Move, Move, TempState8),
-	findFlipSW(Plyr,TempState8, Move, Move, Result).
-
+	north([XN,YN]), south([XS,YS]), east([XE,YE]), west([XW,YW]),
+	northeast([XNE,YNE]), northwest([XNW,YNW]), southeast([XSE,YSE]), southwest([XSW,YSW]),
+	findFlip(Plyr, State, Move, Move, [XN|YN], TempState2),
+	findFlip(Plyr, TempState2, Move, Move, [XS|YS], TempState3),
+	findFlip(Plyr, TempState3, Move, Move, [XE|YE], TempState4),
+	findFlip(Plyr, TempState4, Move, Move, [XW|YW], TempState5),
+	findFlip(Plyr,TempState5, Move, Move, [XNE|YNE], TempState6),
+	findFlip(Plyr,TempState6, Move, Move, [XNW|YNW], TempState7),
+	findFlip(Plyr,TempState7, Move, Move, [XSE|YSE], TempState8),
+	findFlip(Plyr,TempState8, Move, Move, [XSW|YSW], Result).
+	
 %I find out if theres any distance X between the origin [X1|Y1] untill the end of board where
 %Theres two of the same Player type (1 or 2), if that is true we go into flipped.
 %Flipped simply changes all values inbetween to the same value as the player.
-						   %Static %Iterative
-findFlipN(Plyr, TempState, [X1|Y1], [X2|Y2], Result) :-
-	north([X3,Y3]),	 %iterative values that are constant.
+
+
+findFlip(Plyr, TempState, [X1|Y1], [X2|Y2], [X3|Y3], Result) :-
 	opponent(Plyr, Opponent),  %Opponent 
 	X4 is X2 + X3,	%Opponent cordinates			  
 	Y4 is Y2 + Y3,
@@ -184,141 +186,7 @@ findFlipN(Plyr, TempState, [X1|Y1], [X2|Y2], Result) :-
 			Y6 is Y1 + Y3,
 			flipped(Plyr, TempState, [X6|Y6], [X3|Y3], Result)
 		;
-			findFlipN(Plyr, TempState, [X1|Y1], [X4|Y4], Result)
-		)
-	;
-		Result = TempState
-	).
-
-
-findFlipS(Plyr, TempState, [X1|Y1], [X2|Y2], Result) :-
-	south([X3,Y3]),
-	opponent(Plyr, Opponent),  %Opponent 
-	X4 is X2 + X3,	%Opponent cordinates			  
-	Y4 is Y2 + Y3,
-	X5 is X2 + X3 + X3,	%Player Cordinates.
-	Y5 is Y2 + Y3 + Y3,
-	((get(TempState,[X4,Y4],Opponent)), (validCords([X2,Y2])),(validCords([X4,Y4])),(validCords([X5,Y5])) ->
-		((get(TempState,[X4,Y4],Opponent)),(get(TempState,[X5,Y5],Plyr)) -> 
-			X6 is X1 + X3,
-			Y6 is Y1 + Y3,
-			flipped(Plyr, TempState, [X6|Y6], [X3|Y3], Result)
-		;
-			findFlipS(Plyr, TempState, [X1|Y1], [X4|Y4], Result)
-		)
-	;
-		Result = TempState
-	).
-
-findFlipE(Plyr, TempState, [X1|Y1], [X2|Y2], Result) :-
-	east([X3,Y3]),
-	opponent(Plyr, Opponent),  %Opponent 
-	X4 is X2 + X3,	%Opponent cordinates			  
-	Y4 is Y2 + Y3,
-	X5 is X2 + X3 + X3,	%Player Cordinates.
-	Y5 is Y2 + Y3 + Y3,
-	((get(TempState,[X4,Y4],Opponent)), (validCords([X2,Y2])),(validCords([X4,Y4])),(validCords([X5,Y5])) ->
-		((get(TempState,[X4,Y4],Opponent)),(get(TempState,[X5,Y5],Plyr)) -> 
-			X6 is X1 + X3,
-			Y6 is Y1 + Y3,
-			flipped(Plyr, TempState, [X6|Y6], [X3|Y3], Result)
-		;
-			findFlipE(Plyr, TempState, [X1|Y1], [X4|Y4], Result)
-		)
-	;
-		Result = TempState
-	).
-
-findFlipW(Plyr, TempState, [X1|Y1], [X2|Y2], Result) :-
-	west([X3,Y3]),
-	opponent(Plyr, Opponent),  %Opponent 
-	X4 is X2 + X3,	%Opponent cordinates			  
-	Y4 is Y2 + Y3,
-	X5 is X2 + X3 + X3,	%Player Cordinates.
-	Y5 is Y2 + Y3 + Y3,
-	((get(TempState,[X4,Y4],Opponent)), (validCords([X2,Y2])),(validCords([X4,Y4])),(validCords([X5,Y5])) ->
-		((get(TempState,[X4,Y4],Opponent)),(get(TempState,[X5,Y5],Plyr)) -> 
-			X6 is X1 + X3,
-			Y6 is Y1 + Y3,
-			flipped(Plyr, TempState, [X6|Y6], [X3|Y3], Result)
-		;
-			findFlipW(Plyr, TempState, [X1|Y1], [X4|Y4], Result)
-		)
-	;
-		Result = TempState
-	).
-
-findFlipNE(Plyr, TempState, [X1|Y1], [X2|Y2], Result) :-
-	northeast([X3,Y3]),
-	opponent(Plyr, Opponent),  %Opponent 
-	X4 is X2 + X3,	%Opponent cordinates			  
-	Y4 is Y2 + Y3,
-	X5 is X2 + X3 + X3,	%Player Cordinates.
-	Y5 is Y2 + Y3 + Y3,
-	((get(TempState,[X4,Y4],Opponent)), (validCords([X2,Y2])),(validCords([X4,Y4])),(validCords([X5,Y5])) ->
-		((get(TempState,[X4,Y4],Opponent)),(get(TempState,[X5,Y5],Plyr)) -> 
-			X6 is X1 + X3,
-			Y6 is Y1 + Y3,
-			flipped(Plyr, TempState, [X6|Y6], [X3|Y3], Result)
-		;
-			findFlipNE(Plyr, TempState, [X1|Y1], [X4|Y4], Result)
-		)
-	;
-		Result = TempState
-	).
-
-findFlipNW(Plyr, TempState, [X1|Y1], [X2|Y2], Result) :-
-	northwest([X3,Y3]),
-	opponent(Plyr, Opponent),  %Opponent 
-	X4 is X2 + X3,	%Opponent cordinates			  
-	Y4 is Y2 + Y3,
-	X5 is X2 + X3 + X3,	%Player Cordinates.
-	Y5 is Y2 + Y3 + Y3,
-	((get(TempState,[X4,Y4],Opponent)), (validCords([X2,Y2])),(validCords([X4,Y4])),(validCords([X5,Y5])) ->
-		((get(TempState,[X4,Y4],Opponent)),(get(TempState,[X5,Y5],Plyr)) -> 
-			X6 is X1 + X3,
-			Y6 is Y1 + Y3,
-			flipped(Plyr, TempState, [X6|Y6], [X3|Y3], Result)
-		;
-			findFlipNW(Plyr, TempState, [X1|Y1], [X4|Y4], Result)
-		)
-	;
-		Result = TempState
-	).
-
-findFlipSE(Plyr, TempState, [X1|Y1], [X2|Y2], Result) :-
-	southeast([X3,Y3]),
-	opponent(Plyr, Opponent),  %Opponent 
-	X4 is X2 + X3,	%Opponent cordinates			  
-	Y4 is Y2 + Y3,
-	X5 is X2 + X3 + X3,	%Player Cordinates.
-	Y5 is Y2 + Y3 + Y3,
-	((get(TempState,[X4,Y4],Opponent)), (validCords([X2,Y2])),(validCords([X4,Y4])),(validCords([X5,Y5])) ->
-		((get(TempState,[X4,Y4],Opponent)),(get(TempState,[X5,Y5],Plyr)) -> 
-			X6 is X1 + X3,
-			Y6 is Y1 + Y3,
-			flipped(Plyr, TempState, [X6|Y6], [X3|Y3], Result)
-		;
-			findFlipSE(Plyr, TempState, [X1|Y1], [X4|Y4], Result)
-		)
-	;
-		Result = TempState
-	).
-
-findFlipSW(Plyr, TempState, [X1|Y1], [X2|Y2], Result) :-
-	southwest([X3,Y3]),
-	opponent(Plyr, Opponent),  %Opponent 
-	X4 is X2 + X3,	%Opponent cordinates			  
-	Y4 is Y2 + Y3,
-	X5 is X2 + X3 + X3,	%Player Cordinates.
-	Y5 is Y2 + Y3 + Y3,
-	((get(TempState,[X4,Y4],Opponent)), (validCords([X2,Y2])),(validCords([X4,Y4])),(validCords([X5,Y5])) -> 
-		((get(TempState,[X4,Y4],Opponent)),(get(TempState,[X5,Y5],Plyr)) -> 
-			X6 is X1 + X3,
-			Y6 is Y1 + Y3,
-			flipped(Plyr, TempState, [X6|Y6], [X3|Y3], Result)
-		;
-			findFlipSW(Plyr, TempState, [X1|Y1], [X4|Y4], Result)
+			findFlip(Plyr, TempState, [X1|Y1], [X4|Y4], [X3|Y3],Result)
 		)
 	;
 		Result = TempState
