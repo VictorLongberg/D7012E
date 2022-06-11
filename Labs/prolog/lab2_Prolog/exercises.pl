@@ -1,9 +1,5 @@
 %https://sites.google.com/site/prologsite/prolog-problems
 
-
-%, is and
-%. is or
-
 %1.01, (*) Find the last element of a list. 
 my_last(X,[X]). %if its only one item
 % matches the tail to the X value, | creates head and tail

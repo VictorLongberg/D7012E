@@ -54,7 +54,7 @@
 %%%  holds iff InitialState is the initial state and 
 %%%  InitialPlyr is the player who moves first. 
 
-initialize(InitialState,InitialPlyr) :- testBoard300(InitialState), InitialPlyr = 1.
+initialize(InitialState,InitialPlyr) :- testBoard100(InitialState), InitialPlyr = 1.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%winner(...)%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% define winner(State,Plyr) here.  
@@ -66,7 +66,7 @@ winner(State, Plyr) :-
 	calculateScore(1,State,0,Score1), %Calculates the score for respective player.
 	calculateScore(2,State,0,Score2),
 	Score1 \= Score2, 		% making sure we dont declare a winner incase of tie.
-    ((Score1 < Score2) -> %person with least points/stones wins. 	
+    ((Score1 < Score2) ->   % person with least points/stones wins. 	
         Plyr = 1
     ; 
         Plyr = 2
@@ -115,14 +115,12 @@ printList([H | L]) :-
 
 moves(Plyr, State, MvList) :-
 	length(State,Len),
-	Index is Len -1, 			%length of a 6x6 is 6, but we index from 0 so -1.
+	Index is Len -1, 			%  length of a 6x6 is 6, but we index from 0 so -1.
 	range(0,Index,RangeList), 	% returns [0,1,2,3,4,5]
 	findall(Y,perm(2,RangeList,Y),CoordList), % find all combinations of 2set [X,Y] coordinates.
 	calculateTestmoves(Plyr, State, CoordList, [], Moves),	% Calculate all possible moves.
 	sort(Moves, Moves2),  		%Sort it to remove possible duplicates and so on..
-	%append(Moves2, [['n']], Moves3),
 	tail(Moves2,MvList).  		%remove the first element since its always a empty list.
-	%writeln(MvList).
 
 
 calculateTestmoves(_,_,[],Temp,Temp). 						% For the list of Cordinates run its
@@ -132,9 +130,8 @@ calculateTestmoves(Plyr,State,[Head|Tails],Temp,Moves) :- 	% length to find all 
 	calculateTestmoves(Plyr,State,Tails,SoFar2,Moves).
 
 testmoves(Plyr,State,[X,Y],SoFar) :-
-	(validmove(Plyr, State, [X,Y]) % will fail if we get false, so i add empty array when false,
-	-> 							   % so I sort the resulting array in the end to remove all empty arrays
-		SoFar = [X,Y]			   % and then remove the head of that array containing the last empty array.
+	(validmove(Plyr, State, [X,Y]) -> % will fail if we get false, so i add empty array when false, 							   % so I sort the resulting array in the end to remove all empty arrays
+		SoFar = [X,Y]			      % and then remove the head of that array containing the last empty array.
 	;
 		SoFar = []
 	).
@@ -152,8 +149,6 @@ nextState(Plyr, Move, State, NewState, NextPlyr) :-
 	member(Move,MoveList),		        % within in the list of possible moves.
 	set(State, TempState1, Move, Plyr), % Set the Move input to the player value.
 	findAllFlips(Plyr, TempState1, Move, NewState).
-	%NextPlyr = Opponent,
-	%NewState = FinalTempState.
 
 % Find the Combinations of flips available in the newstate.
 % Takes each state from the previous function and applies it to the next and so on.
@@ -172,7 +167,6 @@ findAllFlips(Plyr, State, Move, Result) :-
 %I find out if theres any distance X between the origin [X1|Y1] untill the end of board where
 %Theres two of the same Player type (1 or 2), if that is true we go into flipped.
 %Flipped simply changes all values inbetween to the same value as the player.
-
 
 findFlip(Plyr, TempState, [X1|Y1], [X2|Y2], [X3|Y3], Result) :-
 	opponent(Plyr, Opponent),  %Opponent 
@@ -211,15 +205,7 @@ flipped(Plyr, TempState, [X|Y], [X2|Y2], Result) :-
 %% define validmove(Plyr,State,Proposed). 
 %   - true if Proposed move by Plyr is valid at State.
 
-/*
-	    	 North
-	NorthWest	  NoerthEast
-West		  				East
-	SouthWest	  SouthEast
-			 South
-*/
-
-% We test if we can move in any of the 8 directions.
+% test if we can move in any of the 8 directions.
 % and if that case is ever true then that cordinate is valid.
 validmove(Plyr, State, Proposed) :- 
 	get(State, Proposed, '.'), 		% we want to find the occurances of "." and in the 
